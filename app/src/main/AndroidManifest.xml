@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+<!--    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />-->
+<!--    <uses-permission android:name="android.permission.MANAGE_USERS" />-->
+<!--    <uses-permission android:name="android.permission.CHANGE_COMPONENT_ENABLED_STATE" />-->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.FrameworkFeatureTest"
+        android:name=".MyApplication"
+        android:persistent="true"
+        tools:targetApi="31">
+
+        <activity
+            android:name=".activity.UserManagerTestActivity"
+            android:exported="false" />
+        <!--
+        <activity
+            android:name=".activity.EmptyTestActivity"
+            android:exported="false" />
+        -->
+        <service
+            android:name=".service.MyService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.frameworkfeaturetest.start_service" />
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name=".activity.ActivityManagerTestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.DevicePolicyManagerTestActivity"
+            android:exported="false"
+            android:theme="@style/Base.Theme.SubActivity" />
+        <activity
+            android:name=".MyAppWidgetConfigurationActivity"
+            android:exported="false"
+            android:theme="@style/Base.Theme.SubActivity" />
+        <activity
+            android:name=".activity.AppWidgetServiceTestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.base.TestBaseActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.PackageManagerTestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.ResourcesTestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.BroadcastTestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.AlarmManagerTestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name=".receiver.BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".receiver.TestReceiver"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.frameworkfeaturetest.action.ACTION_TEST_RECEIVER" />
+                <action android:name="android.intent.action.PACKAGE_CHANGED" />
+
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".MyAppWidgetProvider"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/my_appwidget_info" />
+        </receiver>
+        <receiver
+            android:name=".receiver.MyDeviceAdminReceiver"
+            android:description="@string/device_admin_description"
+            android:exported="false"
+            android:label="@string/device_admin_label"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin_receiver" />
+
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+                <action android:name="android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED" />
+                <action android:name="android.app.action.DEVICE_ADMIN_DISABLED" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>

@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">FrameworkFeatureTest</string>
+
+    <array name="main_test_array">
+        <item>PackageManager测试</item>
+        <item>Broadcast测试</item>
+        <item>AppWidgetService测试</item>
+        <item>AlarmManager测试</item>
+        <item>Resources测试</item>
+        <item>DevicePolicyManager测试</item>
+        <item>ActivityManager测试</item>
+        <item>UserManager测试</item>
+    </array>
+
+    <array name="main_test_class_array">
+        <item>com.example.frameworkfeaturetest.activity.PackageManagerTestActivity</item>
+        <item>com.example.frameworkfeaturetest.activity.BroadcastTestActivity</item>
+        <item>com.example.frameworkfeaturetest.activity.AppWidgetServiceTestActivity</item>
+        <item>com.example.frameworkfeaturetest.activity.AlarmManagerTestActivity</item>
+        <item>com.example.frameworkfeaturetest.activity.ResourcesTestActivity</item>
+        <item>com.example.frameworkfeaturetest.activity.DevicePolicyManagerTestActivity</item>
+        <item>com.example.frameworkfeaturetest.activity.ActivityManagerTestActivity</item>
+        <item>com.example.frameworkfeaturetest.activity.UserManagerTestActivity</item>
+    </array>
+
+    <string name="example_appwidget_description">小部件描述</string>
+
+    <string name="device_admin_description">这是我的设备管理器</string>
+    <string name="device_admin_label">我的设备管理器</string>
+</resources>
