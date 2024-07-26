@@ -10,6 +10,11 @@ public class TestReceiver extends BroadcastReceiver {
     public static final String ACTION_TEST_RECEIVER = "com.example.frameworkfeaturetest.action.ACTION_TEST_RECEIVER";
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(TAG, "onReceive: ");
+        Log.d(TAG, "onReceive: TestReceiver");
+        try {
+            Thread.sleep(8000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

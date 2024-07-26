@@ -1,26 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
-<!--    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />-->
-<!--    <uses-permission android:name="android.permission.MANAGE_USERS" />-->
-<!--    <uses-permission android:name="android.permission.CHANGE_COMPONENT_ENABLED_STATE" />-->
+    <!-- <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" /> -->
+    <!-- <uses-permission android:name="android.permission.MANAGE_USERS" /> -->
+    <!-- <uses-permission android:name="android.permission.CHANGE_COMPONENT_ENABLED_STATE" /> -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+
+    <permission android:name="com.example.frameworkfeaturetest.test_permission" />
+
+    <permission-group android:name="com.example.frameworkfeaturetest.MY_PERMISSION" />
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:persistent="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FrameworkFeatureTest"
-        android:name=".MyApplication"
-        android:persistent="true"
         tools:targetApi="31">
-
+        <activity
+            android:name=".activity.VmTestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.CustomSystemServiceTestActivity"
+            android:exported="false" />
         <activity
             android:name=".activity.UserManagerTestActivity"
             android:exported="false" />
@@ -84,15 +93,26 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver
+        <!--
+<receiver
             android:name=".receiver.TestReceiver"
-            android:enabled="false"
-            android:exported="true">
+            android:enabled="true"
+            android:exported="true"
+            android:permission="com.example.frameworkfeaturetest.test_permission">
             <intent-filter>
                 <action android:name="com.example.frameworkfeaturetest.action.ACTION_TEST_RECEIVER" />
-                <action android:name="android.intent.action.PACKAGE_CHANGED" />
-
-                <data android:scheme="package" />
+&lt;!&ndash;                <action android:name="android.intent.action.PACKAGE_CHANGED"/>&ndash;&gt;
+&lt;!&ndash;                <data android:scheme="package"/>&ndash;&gt;
+            </intent-filter>
+        </receiver>
+        -->
+        <receiver
+            android:name=".receiver.TestReceiver3"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="com.example.frameworkfeaturetest.test_permission">
+            <intent-filter>
+                <action android:name="com.example.frameworkfeaturetest.action.ACTION_TEST_RECEIVER" />
             </intent-filter>
         </receiver>
         <receiver

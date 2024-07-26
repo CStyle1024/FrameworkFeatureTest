@@ -20,6 +20,16 @@ android {
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters.addAll(listOf("arm64-v8a"))
+        }
+    }
+
+    sourceSets {
+        getByName("main") {
+            jniLibs.srcDirs("libs")
+        }
     }
 
     signingConfigs {
@@ -47,6 +57,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+//            signingConfig = signingConfigs.getByName("debug")
             signingConfig = signingConfigs.getByName("platform-e05")
         }
     }
@@ -54,6 +65,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
 }
 
 project.tasks.preBuild.get().doLast {

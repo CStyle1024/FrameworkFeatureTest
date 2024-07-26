@@ -1,14 +1,20 @@
 package com.example.frameworkfeaturetest.activity;
 
+import static com.example.frameworkfeaturetest.receiver.TestReceiver.ACTION_TEST_RECEIVER;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActivityManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Broadcaster;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.FileUtils;
+import android.os.IBinder;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
@@ -33,9 +39,6 @@ public class ActivityManagerTestActivity extends TestBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manager_test);
 
-        Intent intent = new Intent();
-        ClassLoader cl = intent.getClass().getClassLoader();
-        Log.d(TAG, "onCreate: cl=" + cl);
     }
 
     @Override
@@ -50,14 +53,46 @@ public class ActivityManagerTestActivity extends TestBaseActivity {
 
 
     public void onClick(View view) {
-//        Intent intent = new Intent(this, MyService.class);
-//        startForegroundService();
-        testStartActivity();
+        final int viewId = view.getId();
+        if (R.id.btn_start_service == viewId) {
+            Intent intent = new Intent(this, MyService.class);
+        } else if (R.id.btn_bind_service == viewId) {
+            Intent intent = new Intent(this, MyService.class);
+            bindService(intent, new MyServiceConnection(), Context.BIND_AUTO_CREATE);
+        }
+    }
+
+    class MyServiceConnection implements ServiceConnection {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d(TAG, "onServiceConnected: ");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d(TAG, "onServiceConnected: ");
+        }
+
+        @Override
+        public void onBindingDied(ComponentName name) {
+            Log.d(TAG, "onBindingDied: ");
+        }
+
+        @Override
+        public void onNullBinding(ComponentName name) {
+            Log.d(TAG, "onNullBinding: ");
+        }
     }
 
     private void testStartActivity() {
         Intent intent = new Intent(this, EmptyTestActivity.class);
         startActivity(intent);
+    }
+
+    private void startService() {
+        Intent intent = new Intent(this, MyService.class);
+        startService(intent);
     }
 
     private void startForegroundService() {

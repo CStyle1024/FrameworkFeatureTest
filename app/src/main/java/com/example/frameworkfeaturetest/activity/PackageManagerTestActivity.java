@@ -6,19 +6,29 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.UserHandle;
 import android.os.UserManager;
+import android.util.ArraySet;
 import android.util.Log;
 import android.view.View;
 
 import com.example.frameworkfeaturetest.R;
 import com.example.frameworkfeaturetest.activity.base.TestBaseActivity;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+
+import dalvik.system.DexClassLoader;
 
 public class PackageManagerTestActivity extends TestBaseActivity {
     public static final String TAG = PackageManagerTestActivity.class.getSimpleName();
@@ -31,6 +41,8 @@ public class PackageManagerTestActivity extends TestBaseActivity {
 
         initViews();
         initSystemService();
+
+        Log.d(TAG, "onCreate: cl=" + getClassLoader());
     }
 
     @Override
@@ -50,15 +62,18 @@ public class PackageManagerTestActivity extends TestBaseActivity {
         if (R.id.btn_disabled == id) {
             setApplicationEnabledSetting(packageName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, 0);
         } else if (R.id.btn_enabled == id) {
-//            setApplicationEnabledSetting(packageName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, 0);
-            getApplicationEnabledSetting();
+            setApplicationEnabledSetting(packageName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, 0);
         } else if (R.id.btn_getVer == id) {
             String version = getApplicationVersionName("");
             Log.d(TAG, "onClick: version=" + version);
         } else if (R.id.btn_enhancedService == id) {
             testGetEnhancedServiceInfoList(this);
+        } else if (R.id.btn_test == id) {
         }
     }
+
+
+
 
     private void setApplicationEnabledSetting(String packageName, int enabledSetting, int flag) {
         mPackageManager.setApplicationEnabledSetting(packageName, enabledSetting, flag);
@@ -88,10 +103,10 @@ public class PackageManagerTestActivity extends TestBaseActivity {
             ApplicationInfo appInfo = mPackageManager.getApplicationInfo(packageName, 0);
             String sourceDir = appInfo.sourceDir;
             String publicSourceDir = appInfo.publicSourceDir;
-            String classLoaderName = appInfo.classLoaderName;
+//            String classLoaderName = appInfo.classLoaderName;
             Log.d(TAG, "getAppPath: package " + packageName + ", sourceDir=" + sourceDir + "\n"
                     + "publicSourceDir=" + publicSourceDir + "\n"
-                    + "classLoaderName=" + classLoaderName);
+                    /*+ "classLoaderName=" + classLoaderName*/);
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -118,6 +133,26 @@ public class PackageManagerTestActivity extends TestBaseActivity {
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException |
                  InvocationTargetException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void isMzApp(Context context, String packageName) {
+        try {
+            Class<?> pmeClass = Class.forName("flyme.pm.PackageManagerExt");
+            Method getInstanceMethod = pmeClass.getMethod("getInstance", Context.class);
+            Object pmsInstance = getInstanceMethod.invoke(null, context);
+
+            Method isRestorableMzAppMethod = pmeClass.getMethod("isRestorableMzApp", String.class);
+            Object result = isRestorableMzAppMethod.invoke(pmsInstance, packageName);
+            Log.d(TAG, "isMzApp: package:" + packageName + ", result=" + result);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -206,10 +241,79 @@ public class PackageManagerTestActivity extends TestBaseActivity {
      *
      */
     private void getApplicationEnabledSetting() {
-        if (分身用户) {
+//        if (分身用户) {
             Context targetContext = createContextAsUser(this, 0/*目标用户*/, 0);
             int state = targetContext.getPackageManager().getApplicationEnabledSetting("com.meizu.alphame");
             Log.d(TAG, "testCreateContextAsUser: state=" + state);
+//        }
+    }
+
+    public boolean getApplicationEnabled(Context context, String enhancedPackageName) {
+        boolean enabled;
+        int state = context.getPackageManager().getApplicationEnabledSetting(enhancedPackageName);
+        if (PackageManager.COMPONENT_ENABLED_STATE_DEFAULT  == state || PackageManager.COMPONENT_ENABLED_STATE_ENABLED == state) {
+            enabled = true;
+        } else {
+            enabled = false;
         }
+        return enabled;
+    }
+
+//    public boolean getApplicationEnabled(Context context, String enhancedPackageName) {
+//        boolean enabled;
+//        try {
+//            enabled = context.getPackageManager().getApplicationInfo(enhancedPackageName, 0).enabled;
+//        } catch (PackageManager.NameNotFoundException e) {
+//            throw new RuntimeException(e);
+//        }
+//        return enabled;
+//    }
+
+    public void getBuildExtField() {
+        try {
+            Class buildExtClass = Class.forName("android.os.BuildExt");
+            Log.d(TAG, "getBuildExtField: buildExtClass=" + buildExtClass);
+            Field fieldIsShopDemo = buildExtClass.getDeclaredField("IS_SHOPDEMO");
+            fieldIsShopDemo.setAccessible(true);
+            boolean IS_SHOPDEMO = (boolean) fieldIsShopDemo.get(null);
+            Log.d(TAG, "getBuildExtField: IS_SHOPDEMO=" + IS_SHOPDEMO);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private ApplicationInfo getSourceInfo(String packageName) {
+
+        if (packageName != null) {
+            try {
+                ApplicationInfo appinfo = getPackageManager().getApplicationInfo(packageName, 0);
+            } catch (PackageManager.NameNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return null;
+    }
+
+    private void buildInstallIntent() {
+        Intent install = new Intent();
+        install.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        new Thread(() -> {
+            File apkDir = getExternalFilesDir(null);
+            File apkFile = new File(apkDir,"com.yingyonghui.apk");
+            Log.d(TAG, "buildInstallIntent: apkFile=" + apkFile.getAbsolutePath());
+            Uri data = Uri.fromFile(apkFile);
+            Log.d(TAG, "buildInstallIntent: data=" + data.toString());
+            install.setData(data);
+            install.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, getPackageName());
+        }).start();
+    }
+
+    private void getInstalledPackageInfo() {
+
     }
 }

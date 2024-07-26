@@ -41,12 +41,29 @@ public class MyService extends Service {
     }
 
     @Override
+    public void onRebind(Intent intent) {
+        Log.d(TAG, "onRebind: ");
+        super.onRebind(intent);
+    }
+
+    /**
+     * 已经不会执行
+     * @param intent
+     * @param startId
+     */
+    @Override
+    public void onStart(Intent intent, int startId) {
+        super.onStart(intent, startId);
+        Log.d(TAG, "onStart: ");
+    }
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand: ");
 
-        Notification notification = buildNotification();
-        
-        startForeground(NOTIFICATION_ID, notification);
+//        Notification notification = buildNotification();
+//
+//        startForeground(NOTIFICATION_ID, notification);
         
         return START_STICKY;
     }

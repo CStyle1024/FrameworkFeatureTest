@@ -10,6 +10,8 @@
         <item>DevicePolicyManager测试</item>
         <item>ActivityManager测试</item>
         <item>UserManager测试</item>
+        <item>自定义系统服务测试</item>
+        <item>虚拟机相关测试</item>
     </array>
 
     <array name="main_test_class_array">
@@ -21,6 +23,8 @@
         <item>com.example.frameworkfeaturetest.activity.DevicePolicyManagerTestActivity</item>
         <item>com.example.frameworkfeaturetest.activity.ActivityManagerTestActivity</item>
         <item>com.example.frameworkfeaturetest.activity.UserManagerTestActivity</item>
+        <item>com.example.frameworkfeaturetest.activity.CustomSystemServiceTestActivity</item>
+        <item>com.example.frameworkfeaturetest.activity.VmTestActivity</item>
     </array>
 
     <string name="example_appwidget_description">小部件描述</string>

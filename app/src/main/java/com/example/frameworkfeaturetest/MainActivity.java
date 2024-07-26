@@ -12,6 +12,7 @@ import android.view.View;
 
 import com.example.frameworkfeaturetest.adapter.MainTestListAdapter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initView();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume: ");
+        super.onResume();
     }
 
     private void initView() {
