@@ -1,5 +1,6 @@
 package com.example.frameworkfeaturetest;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,14 +42,14 @@ public class MainActivity extends AppCompatActivity {
     private void initView() {
         initMainTestData();
         MainTestListAdapter mtAdapter = new MainTestListAdapter(this, mMainTestDataMap);
-        mMainTestRecyclerView = (RecyclerView) findViewById(R.id.main_test_recycler_view);
+        mMainTestRecyclerView = findViewById(R.id.main_test_recycler_view);
         mMainTestRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mMainTestRecyclerView.setAdapter(mtAdapter);
     }
 
     private void initMainTestData() {
-        String[] main_test_array = getResources().getStringArray(R.array.main_test_array);
-        String[] main_test_classes_array = getResources().getStringArray(R.array.main_test_class_array);
+        String[] main_test_array = getResources().getStringArray(R.array.test_activity_array);
+        String[] main_test_classes_array = getResources().getStringArray(R.array.test_activity_class_array);
         if (main_test_array == null || main_test_classes_array == null || main_test_array.length != main_test_classes_array.length) {
             throw new IllegalStateException("main_test_array and main_test_classes_array should not be null, and the length both of them must be equal.");
         }
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onClick(View view) {
+    public void onClick(@NonNull View view) {
         int id = view.getId();
 //        if (R.id.btn_pms_test == id) {
 //            startActivity(new Intent(this, PackageManagerTestActivity.class));

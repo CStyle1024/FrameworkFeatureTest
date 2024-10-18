@@ -3,18 +3,23 @@ package com.example.frameworkfeaturetest.activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Debug;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.RemoteException;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.util.ArraySet;
 import android.util.Log;
 import android.view.View;
 
+import com.android.internal.util.function.pooled.PooledLambda;
 import com.example.frameworkfeaturetest.R;
 import com.example.frameworkfeaturetest.activity.base.TestBaseActivity;
 
@@ -27,12 +32,21 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
 
 import dalvik.system.DexClassLoader;
 
 public class PackageManagerTestActivity extends TestBaseActivity {
     public static final String TAG = PackageManagerTestActivity.class.getSimpleName();
-    private PackageManager mPackageManager;
+    private PackageManager mPm;
+
+    private MyExecutor myExecutor;
+    private Handler mHandler;
+    private HandlerThread mHandlerThread;
+
+    interface MyExecutor {
+        void execute(Runnable runnable);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +57,22 @@ public class PackageManagerTestActivity extends TestBaseActivity {
         initSystemService();
 
         Log.d(TAG, "onCreate: cl=" + getClassLoader());
+
+        mHandlerThread = new HandlerThread("TestThread");
+        mHandlerThread.start();
+        mHandler = new Handler(mHandlerThread.getLooper());
+        initExecutor(mHandler, r -> {
+            r.run();
+        });
+    }
+
+    private void initExecutor(Handler handler, Executor executor) {
+        myExecutor = new MyExecutor() {
+            @Override
+            public void execute(Runnable runnable) {
+                handler.post(() -> executor.execute(runnable));
+            }
+        };
     }
 
     @Override
@@ -52,10 +82,11 @@ public class PackageManagerTestActivity extends TestBaseActivity {
 
     @Override
     public void initSystemService() {
-        mPackageManager = getPackageManager();
+        mPm = getPackageManager();
     }
 
     public void onClick(View view) {
+        Log.d(TAG, "onClick: ");
         String packageName = "com.meizu.alphame";
 
         int id = view.getId();
@@ -69,14 +100,30 @@ public class PackageManagerTestActivity extends TestBaseActivity {
         } else if (R.id.btn_enhancedService == id) {
             testGetEnhancedServiceInfoList(this);
         } else if (R.id.btn_test == id) {
+//            receiveExecutor(r -> {
+//                r.run();
+//            });
+
+//            Handler handler = new Handler();
+//            handler.post(PooledLambda.obtainRunnable(this::testMethod, System.currentTimeMillis(), getPackageName()));
+
+//            myExecutor.execute(PooledLambda.obtainRunnable(this::testMethod, System.currentTimeMillis(), getPackageName()));
+
+            testGetPIPActivityInfosFeat(PackageManagerTestActivity.this);
         }
     }
 
+    private void receiveExecutor(Executor executor) {
+        executor.execute(PooledLambda.obtainRunnable(this::testMethod, System.currentTimeMillis(), getPackageName()));
+    }
 
-
+    private void testMethod(long systemTimeStamp, String packageName) {
+        Throwable t = new Throwable().fillInStackTrace();
+        Log.d("PooledLambdaImpl", "testMethod: systemTimeStamp=" + systemTimeStamp + ", packageName=" + packageName, t);
+    }
 
     private void setApplicationEnabledSetting(String packageName, int enabledSetting, int flag) {
-        mPackageManager.setApplicationEnabledSetting(packageName, enabledSetting, flag);
+        mPm.setApplicationEnabledSetting(packageName, enabledSetting, flag);
     }
 
     /**
@@ -86,7 +133,7 @@ public class PackageManagerTestActivity extends TestBaseActivity {
      */
     private boolean isSystemApp(String packageName) {
         try {
-            ApplicationInfo applicationInfo = mPackageManager.getApplicationInfo(packageName, 0);
+            ApplicationInfo applicationInfo = mPm.getApplicationInfo(packageName, 0);
             if ((applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
                 // 是系统应用
                 return true;
@@ -100,7 +147,7 @@ public class PackageManagerTestActivity extends TestBaseActivity {
 
     private void showAppPath(String packageName) {
         try {
-            ApplicationInfo appInfo = mPackageManager.getApplicationInfo(packageName, 0);
+            ApplicationInfo appInfo = mPm.getApplicationInfo(packageName, 0);
             String sourceDir = appInfo.sourceDir;
             String publicSourceDir = appInfo.publicSourceDir;
 //            String classLoaderName = appInfo.classLoaderName;
@@ -192,7 +239,6 @@ public class PackageManagerTestActivity extends TestBaseActivity {
                  | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     /**
@@ -203,7 +249,7 @@ public class PackageManagerTestActivity extends TestBaseActivity {
     private String getApplicationVersionName(String packageName) {
         String versionName = "";
         try {
-            PackageInfo packageInfo = mPackageManager.getPackageInfo(packageName, 0);
+            PackageInfo packageInfo = mPm.getPackageInfo(packageName, 0);
             versionName = packageInfo.versionName;
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
@@ -312,8 +358,92 @@ public class PackageManagerTestActivity extends TestBaseActivity {
             install.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, getPackageName());
         }).start();
     }
+    
+    private void getPackageInfo() {
+        String pkg = "com.google.android.gms";
+        try {
+            PackageInfo pkgInfo = mPm.getPackageInfo(pkg,
+                    PackageManager.GET_DISABLED_COMPONENTS
+                            | PackageManager.GET_UNINSTALLED_PACKAGES
+                            | PackageManager.GET_SIGNING_CERTIFICATES);
+            Log.d(TAG, "getPackageInfo: pkgInfo=" + pkgInfo);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
-    private void getInstalledPackageInfo() {
+    private void testHideLauncherIconFeat(Context context) {
+        Class<?> pmeClass;
+        try {
+            pmeClass = Class.forName("flyme.pm.PackageManagerExt");
+            Method getInstanceMethod = pmeClass.getMethod("getInstance", Context.class);
+            // 获取 flyme.pm.PackageManagerExt 实例
+            Object pmeInstance = getInstanceMethod.invoke(null, context);
 
+            Method getSupportsHiddenIconPackages = pmeClass.getMethod("getSupportsHiddenIconPackages", Integer.class);
+            List<ApplicationInfo> appList = (List<ApplicationInfo>) getSupportsHiddenIconPackages.invoke(pmeInstance);
+            Log.d(TAG, "testHideLauncherIconFeat: appList" + appList);
+
+        } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+//            throw new RuntimeException(e);
+            Log.d(TAG, "testHideLauncherIconFeat: ", e);
+        }
+    }
+
+    private void testGetPIPActivityInfosFeat(Context context) {
+        List<ActivityInfo> aiList = null;
+
+        Object pmeInstance = getPackageManagerExtInstance(context);
+        Method getInstalledActivityInfosM = getPackageManagerExtM(context, "getInstalledActivityInfos", int.class, int.class);
+        if (pmeInstance != null && getInstalledActivityInfosM != null) {
+            Object result;
+            try {
+                result = getInstalledActivityInfosM.invoke(pmeInstance, 0, 0x400000);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+            if (result != null) {
+                aiList = (List<ActivityInfo>) result;
+            }
+        }
+        Log.d(TAG, "testGetPIPActivityInfosFeat: aiList = " + aiList);
+    }
+
+    private Object getPackageManagerExtInstance(Context context) {
+        Object pmeInstance = null;
+        try {
+            Class<?> pmeClass = Class.forName("flyme.pm.PackageManagerExt");
+            Method getInstanceMethod = pmeClass.getMethod("getInstance", Context.class);
+            // 获取 flyme.pm.PackageManagerExt 实例
+            pmeInstance = getInstanceMethod.invoke(null, context);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+        return pmeInstance;
+    }
+
+    private Method getPackageManagerExtM(Context context, String methodName, Class<?>... args) {
+        Method targetMethod;
+        try {
+            Object pmeInstance;
+            Class<?> pmeClass = Class.forName("flyme.pm.PackageManagerExt");
+            Method getInstanceMethod = pmeClass.getMethod("getInstance", Context.class);
+            // 获取 flyme.pm.PackageManagerExt 实例
+            pmeInstance = getInstanceMethod.invoke(null, context);
+
+            targetMethod = pmeClass.getMethod(methodName, args);
+            Log.d(TAG, "getPackageManagerExtM: methodName=" + methodName);
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException |
+                 InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+        return targetMethod;
     }
 }

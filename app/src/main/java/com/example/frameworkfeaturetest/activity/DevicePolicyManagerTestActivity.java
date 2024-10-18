@@ -20,7 +20,7 @@ public class DevicePolicyManagerTestActivity extends TestBaseActivity {
     private static final String TAG = "DevicePolicyManagerTestActivity";
 
     private static final int REQUEST_CODE_ENABLE_LOCK_TASK = 0x1;
-    private DevicePolicyManager mDevicePolicyManager;
+    private DevicePolicyManager mDpm;
     private ComponentName mComponentName;
 
     @Override
@@ -38,7 +38,7 @@ public class DevicePolicyManagerTestActivity extends TestBaseActivity {
 
     @Override
     public void initSystemService() {
-        mDevicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+        mDpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
     }
 
     private void init(Context context) {
@@ -50,18 +50,21 @@ public class DevicePolicyManagerTestActivity extends TestBaseActivity {
         int viewId = view.getId();
         if (R.id.btn_lock_task == viewId) {
             Log.d(TAG, "onClick: btn_lock_task");
-            mDevicePolicyManager.setLockTaskPackages(mComponentName, new String[] { this.getPackageName() });
-            boolean hasLockTaskPermission = mDevicePolicyManager.isLockTaskPermitted(this.getPackageName());
+            mDpm.setLockTaskPackages(mComponentName, new String[] { this.getPackageName() });
+            boolean hasLockTaskPermission = mDpm.isLockTaskPermitted(this.getPackageName());
             Log.d(TAG, "checkLockTaskPermission: hasLockTaskPermission:" + hasLockTaskPermission);
             startLockTask();
         } else if (R.id.btn_unlock_task == viewId) {
             Log.d(TAG, "onClick: btn_unlock_task");
             stopLockTask();
+        } else if (R.id.btn_hide_pkg == viewId) {
+            Log.d(TAG, "onClick: btn_hide_pkg");
+            test();
         }
     }
 
     private void checkLockTaskPermission(Context context) {
-        boolean hasLockTaskPermission = mDevicePolicyManager.isLockTaskPermitted(this.getPackageName());
+        boolean hasLockTaskPermission = mDpm.isLockTaskPermitted(this.getPackageName());
         Log.d(TAG, "checkLockTaskPermission: hasLockTaskPermission:" + hasLockTaskPermission);
         if (!hasLockTaskPermission) {
             Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
@@ -81,6 +84,23 @@ public class DevicePolicyManagerTestActivity extends TestBaseActivity {
             } else {
                 Log.d(TAG, "onActivityResult: request failed.");
             }
+        }
+    }
+
+    public void enableAdmin() {
+        Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, mComponentName);
+        intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "Enable device admin to control packages.");
+        startActivity(intent);
+    }
+
+    private void test() {
+        boolean adminActive = mDpm.isAdminActive(mComponentName);
+        Log.d(TAG, "test: adminActive=" + adminActive);
+        if (adminActive) {
+            mDpm.setApplicationHidden(mComponentName, "tv.danmaku.bili", true);
+        } else {
+            Log.d(TAG, "test: ");
         }
     }
 }

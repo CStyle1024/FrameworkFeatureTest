@@ -1,5 +1,7 @@
 package com.example.frameworkfeaturetest;
 
+import com.example.frameworkfeaturetest.service.MyService;
+
 import android.app.Application;
 import android.os.StrictMode;
 
@@ -14,5 +16,6 @@ public class MyApplication extends Application {
 //                .detectNetwork()   // or .detectAll() for all detectable problems
 //                .penaltyLog()
 //                .build());
+//        MyService.startMyselfForegroundIfNeeded(getApplicationContext());
     }
 }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.NotificationTestActivity">
+
+    <Button
+        android:id="@+id/btn_allow_noti"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/allow_noti"/>
+
+    <Button
+        android:id="@+id/btn_send_noti"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/send_noti"/>
+</LinearLayout>

@@ -1,0 +1,173 @@
+"main@18757" prio=5 tid=0x2 nid=NA runnable
+  java.lang.Thread.State: RUNNABLE
+	  at android.view.View.getLayoutDirection(View.java:13215)
+	  at android.view.View.isLayoutRtl(View.java:13230)
+	  at android.widget.TextView.onDraw(TextView.java:8965)
+	  at android.view.View.draw(View.java:24042)
+	  at android.view.View.updateDisplayListIfDirty(View.java:22905)
+	  at android.view.ViewGroup.recreateChildDisplayList(ViewGroup.java:4571)
+	  at android.view.ViewGroup.dispatchGetDisplayList(ViewGroup.java:4544)
+	  at android.view.View.updateDisplayListIfDirty(View.java:22861)
+	  at android.view.ViewGroup.recreateChildDisplayList(ViewGroup.java:4571)
+	  at android.view.ViewGroup.dispatchGetDisplayList(ViewGroup.java:4544)
+	  at android.view.View.updateDisplayListIfDirty(View.java:22861)
+	  at android.view.ViewGroup.recreateChildDisplayList(ViewGroup.java:4571)
+	  at android.view.ViewGroup.dispatchGetDisplayList(ViewGroup.java:4544)
+	  at android.view.View.updateDisplayListIfDirty(View.java:22861)
+	  at android.view.ViewGroup.recreateChildDisplayList(ViewGroup.java:4571)
+	  at android.view.ViewGroup.dispatchGetDisplayList(ViewGroup.java:4544)
+	  at android.view.View.updateDisplayListIfDirty(View.java:22861)
+	  at android.view.ViewGroup.recreateChildDisplayList(ViewGroup.java:4571)
+	  at android.view.ViewGroup.dispatchGetDisplayList(ViewGroup.java:4544)
+	  at android.view.View.updateDisplayListIfDirty(View.java:22861)
+	  at android.view.ViewGroup.recreateChildDisplayList(ViewGroup.java:4571)
+	  at android.view.ViewGroup.dispatchGetDisplayList(ViewGroup.java:4544)
+	  at android.view.View.updateDisplayListIfDirty(View.java:22861)
+	  at android.view.ViewGroup.recreateChildDisplayList(ViewGroup.java:4571)
+	  at android.view.ViewGroup.dispatchGetDisplayList(ViewGroup.java:4544)
+	  at android.view.View.updateDisplayListIfDirty(View.java:22861)
+	  at android.view.ViewGroup.recreateChildDisplayList(ViewGroup.java:4571)
+	  at android.view.ViewGroup.dispatchGetDisplayList(ViewGroup.java:4544)
+	  at android.view.View.updateDisplayListIfDirty(View.java:22861)
+	  at android.view.ThreadedRenderer.updateViewTreeDisplayList(ThreadedRenderer.java:700)
+	  at android.view.ThreadedRenderer.updateRootDisplayList(ThreadedRenderer.java:706)
+	  at android.view.ThreadedRenderer.draw(ThreadedRenderer.java:804)
+	  at android.view.ViewRootImpl.draw(ViewRootImpl.java:5036)
+	  at android.view.ViewRootImpl.performDraw(ViewRootImpl.java:4736)
+	  at android.view.ViewRootImpl.performTraversals(ViewRootImpl.java:3908)
+	  at android.view.ViewRootImpl.doTraversal(ViewRootImpl.java:2527)
+	  at android.view.ViewRootImpl$TraversalRunnable.run(ViewRootImpl.java:9477)
+	  at android.view.Choreographer$CallbackRecord.run(Choreographer.java:1574)
+	  at android.view.Choreographer$CallbackRecord.run(Choreographer.java:1583)
+	  at android.view.Choreographer.doCallbacks(Choreographer.java:1176)
+	  at android.view.Choreographer.doFrame(Choreographer.java:1104)
+	  at android.view.Choreographer$FrameDisplayEventReceiver.run(Choreographer.java:1547)
+	  at android.os.Handler.handleCallback(Handler.java:958)
+	  at android.os.Handler.dispatchMessage(Handler.java:99)
+	  at android.os.Looper.loopOnce(Looper.java:205)
+	  at android.os.Looper.loop(Looper.java:294)
+	  at android.app.ActivityThread.main(ActivityThread.java:8417)
+	  at java.lang.reflect.Method.invoke(Method.java:-1)
+	  at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:552)
+	  at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:977)
+
+"TestThread@18838" prio=5 tid=0x293 nid=NA runnable
+  java.lang.Thread.State: RUNNABLE
+	  at com.example.frameworkfeaturetest.activity.PackageManagerTestActivity.testMethod(PackageManagerTestActivity.java:118)
+	  at com.example.frameworkfeaturetest.activity.PackageManagerTestActivity.$r8$lambda$nZvICqzKdZ1GQnQ7I7koWl0wkPw(PackageManagerTestActivity.java:-1)
+	  at com.example.frameworkfeaturetest.activity.PackageManagerTestActivity$$ExternalSyntheticLambda1.accept(D8$$SyntheticClass:-1)
+	  at com.android.internal.util.function.pooled.PooledLambdaImpl.doInvoke(PooledLambdaImpl.java:281)
+	  at com.android.internal.util.function.pooled.PooledLambdaImpl.invoke(PooledLambdaImpl.java:204)
+	  at com.android.internal.util.function.pooled.OmniFunction.run(OmniFunction.java:87)
+	  at com.example.frameworkfeaturetest.activity.PackageManagerTestActivity.lambda$onCreate$0(PackageManagerTestActivity.java:64)
+	  at com.example.frameworkfeaturetest.activity.PackageManagerTestActivity$$ExternalSyntheticLambda0.execute(D8$$SyntheticClass:-1)
+	  at com.example.frameworkfeaturetest.activity.PackageManagerTestActivity$1.lambda$execute$0(PackageManagerTestActivity.java:72)
+	  at com.example.frameworkfeaturetest.activity.PackageManagerTestActivity$1$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:-1)
+	  at android.os.Handler.handleCallback(Handler.java:958)
+	  at android.os.Handler.dispatchMessage(Handler.java:99)
+	  at android.os.Looper.loopOnce(Looper.java:205)
+	  at android.os.Looper.loop(Looper.java:294)
+	  at android.os.HandlerThread.run(HandlerThread.java:67)
+
+"FinalizerDaemon@18928" daemon prio=5 tid=0x280 nid=NA waiting
+  java.lang.Thread.State: WAITING
+	 blocks FinalizerDaemon@18928
+	  at java.lang.Object.wait(Object.java:-1)
+	  at java.lang.Object.wait(Object.java:386)
+	  at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:210)
+	  - locked <0x49fa> (a java.lang.Object)
+	  at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:231)
+	  at java.lang.Daemons$FinalizerDaemon.runInternal(Daemons.java:309)
+	  at java.lang.Daemons$Daemon.run(Daemons.java:145)
+	  at java.lang.Thread.run(Thread.java:1012)
+
+"FinalizerWatchdogDaemon@18929" daemon prio=5 tid=0x281 nid=NA waiting
+  java.lang.Thread.State: WAITING
+	 blocks FinalizerWatchdogDaemon@18929
+	  at java.lang.Object.wait(Object.java:-1)
+	  at java.lang.Object.wait(Object.java:386)
+	  at java.lang.Object.wait(Object.java:524)
+	  at java.lang.Daemons$FinalizerWatchdogDaemon.sleepUntilNeeded(Daemons.java:428)
+	  - locked <0x49fb> (a java.lang.Daemons$FinalizerWatchdogDaemon)
+	  at java.lang.Daemons$FinalizerWatchdogDaemon.runInternal(Daemons.java:408)
+	  at java.lang.Daemons$Daemon.run(Daemons.java:145)
+	  at java.lang.Thread.run(Thread.java:1012)
+
+"ReferenceQueueDaemon@18927" daemon prio=5 tid=0x27e nid=NA waiting
+  java.lang.Thread.State: WAITING
+	 blocks ReferenceQueueDaemon@18927
+	  at java.lang.Object.wait(Object.java:-1)
+	  at java.lang.Object.wait(Object.java:386)
+	  at java.lang.Object.wait(Object.java:524)
+	  at java.lang.Daemons$ReferenceQueueDaemon.runInternal(Daemons.java:239)
+	  - locked <0x1861> (a java.lang.Class)
+	  at java.lang.Daemons$Daemon.run(Daemons.java:145)
+	  at java.lang.Thread.run(Thread.java:1012)
+
+"SurfaceSyncGroupTimer@18934" prio=5 tid=0x288 nid=NA runnable
+  java.lang.Thread.State: RUNNABLE
+	  at android.os.MessageQueue.nativePollOnce(MessageQueue.java:-1)
+	  at android.os.MessageQueue.next(MessageQueue.java:335)
+	  at android.os.Looper.loopOnce(Looper.java:162)
+	  at android.os.Looper.loop(Looper.java:294)
+	  at android.os.HandlerThread.run(HandlerThread.java:67)
+
+"ContentCapture@18785" prio=5 tid=0x291 nid=NA runnable
+  java.lang.Thread.State: RUNNABLE
+	  at android.os.MessageQueue.nativePollOnce(MessageQueue.java:-1)
+	  at android.os.MessageQueue.next(MessageQueue.java:335)
+	  at android.os.Looper.loopOnce(Looper.java:162)
+	  at android.os.Looper.loop(Looper.java:294)
+	  at android.os.HandlerThread.run(HandlerThread.java:67)
+
+"queued-work-looper@18848" prio=5 tid=0x295 nid=NA runnable
+  java.lang.Thread.State: RUNNABLE
+	  at android.os.MessageQueue.nativePollOnce(MessageQueue.java:-1)
+	  at android.os.MessageQueue.next(MessageQueue.java:335)
+	  at android.os.Looper.loopOnce(Looper.java:162)
+	  at android.os.Looper.loop(Looper.java:294)
+	  at android.os.HandlerThread.run(HandlerThread.java:67)
+
+"HeapTaskDaemon@18926" daemon prio=5 tid=0x27d nid=NA waiting
+  java.lang.Thread.State: WAITING
+	  at dalvik.system.VMRuntime.runHeapTasks(VMRuntime.java:-1)
+	  at java.lang.Daemons$HeapTaskDaemon.runInternal(Daemons.java:687)
+	  at java.lang.Daemons$Daemon.run(Daemons.java:145)
+	  at java.lang.Thread.run(Thread.java:1012)
+
+"Signal Catcher@18923" daemon prio=10 tid=0x27b nid=NA waiting
+  java.lang.Thread.State: WAITING
+
+"ADB-JDWP Connection Control Thread@18924" daemon prio=0 tid=0x27c nid=NA waiting
+  java.lang.Thread.State: WAITING
+
+"Jit thread pool worker thread 0@18925" daemon prio=5 tid=0x27f nid=NA runnable
+  java.lang.Thread.State: RUNNABLE
+
+"binder:22957_1@18930" prio=5 tid=0x282 nid=NA runnable
+  java.lang.Thread.State: RUNNABLE
+
+"binder:22957_2@18931" prio=5 tid=0x283 nid=NA runnable
+  java.lang.Thread.State: RUNNABLE
+
+"Profile Saver@18932" daemon prio=5 tid=0x284 nid=NA runnable
+  java.lang.Thread.State: RUNNABLE
+
+"RenderThread@18933" daemon prio=7 tid=0x287 nid=NA runnable
+  java.lang.Thread.State: RUNNABLE
+
+"hwuiTask0@18935" daemon prio=6 tid=0x289 nid=NA runnable
+  java.lang.Thread.State: RUNNABLE
+
+"hwuiTask1@18936" daemon prio=6 tid=0x28a nid=NA runnable
+  java.lang.Thread.State: RUNNABLE
+
+"binder:22957_3@18937" prio=5 tid=0x28b nid=NA runnable
+  java.lang.Thread.State: RUNNABLE
+
+"binder:22957_4@18835" prio=5 tid=0x292 nid=NA runnable
+  java.lang.Thread.State: RUNNABLE
+
+"binder:22957_5@18842" prio=5 tid=0x294 nid=NA runnable
+  java.lang.Thread.State: RUNNABLE
+

@@ -6,7 +6,8 @@ import android.content.Intent;
 import android.util.Log;
 
 public class TestReceiver2 extends BroadcastReceiver {
-    public static final String TAG = TestReceiver.class.getSimpleName();
+//    public static final String TAG = TestReceiver2.class.getSimpleName();
+    public static final String TAG = "BroadcastTestActivity";
 
     @Override
     public void onReceive(Context context, Intent intent) {

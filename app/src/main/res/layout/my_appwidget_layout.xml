@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_container"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
     <ImageView
-        android:id="@+id/button"
+        android:id="@+id/widget_iv"
         android:src="@mipmap/ic_launcher"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>

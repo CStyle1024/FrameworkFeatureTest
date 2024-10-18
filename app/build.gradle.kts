@@ -68,47 +68,48 @@ android {
 
 }
 
-project.tasks.preBuild.get().doLast {
-    fun changeSdkOrder(path: String) {
-        runCatching {
-            val imlFile = File(path)
-            val xmlParser = XmlParser().parse(imlFile)
-            println("> Task :${project.name}:preBuild:doLast:changedSdkOrder xmlParser=" + xmlParser)
-            with(XmlParser().parse(imlFile)) {
-                println("> Task :${project.name}:preBuild:doLast:changedSdkOrder jdkEntry")
-                val rootManagerComponent = getAt(QName.valueOf("component"))
-                    .map { it as Node }
-                    .first { it.attribute("name") == "NewModuleRootManager" }
-                val jdkEntry = rootManagerComponent.getAt(QName.valueOf("orderEntry"))
-                    .map { it as Node }
-                    .first { it.attribute("type") == "jdk" }
-                val jdkName = jdkEntry.attribute("jdkName")
-                val jdkType = jdkEntry.attribute("jdkType")
-                println("> Task :${project.name}:preBuild:doLast:changedSdkOrder jdkEntry = $jdkEntry")
-                rootManagerComponent.remove(jdkEntry)
-                rootManagerComponent.appendNode(
-                    "orderEntry", mapOf(
-                        "type" to "jdk",
-                        "jdkName" to jdkName,
-                        "jdkType" to jdkType
-                    )
-                )
-                XmlUtil.serialize(this, FileOutputStream(imlFile))
-            }
-        }
-    }
-
-    println("> Task :${project.name}:preBuild:doLast:changedSdkOrder:" + rootDir.absolutePath + "/.idea/modules/app/FrameworkFeatureTest.iml")
-    changeSdkOrder(rootDir.absolutePath + "/.idea/modules/app/FrameworkFeatureTest.iml")
-}
+//project.tasks.preBuild.get().doLast {
+//    fun changeSdkOrder(path: String) {
+//        runCatching {
+//            val imlFile = File(path)
+//            val xmlParser = XmlParser().parse(imlFile)
+//            println("> Task :${project.name}:preBuild:doLast:changedSdkOrder xmlParser=" + xmlParser)
+//            with(XmlParser().parse(imlFile)) {
+//                println("> Task :${project.name}:preBuild:doLast:changedSdkOrder jdkEntry")
+//                val rootManagerComponent = getAt(QName.valueOf("component"))
+//                    .map { it as Node }
+//                    .first { it.attribute("name") == "NewModuleRootManager" }
+//                val jdkEntry = rootManagerComponent.getAt(QName.valueOf("orderEntry"))
+//                    .map { it as Node }
+//                    .first { it.attribute("type") == "jdk" }
+//                val jdkName = jdkEntry.attribute("jdkName")
+//                val jdkType = jdkEntry.attribute("jdkType")
+//                println("> Task :${project.name}:preBuild:doLast:changedSdkOrder jdkEntry = $jdkEntry")
+//                rootManagerComponent.remove(jdkEntry)
+//                rootManagerComponent.appendNode(
+//                    "orderEntry", mapOf(
+//                        "type" to "jdk",
+//                        "jdkName" to jdkName,
+//                        "jdkType" to jdkType
+//                    )
+//                )
+//                XmlUtil.serialize(this, FileOutputStream(imlFile))
+//            }
+//        }
+//    }
+//
+//    println("> Task :${project.name}:preBuild:doLast:changedSdkOrder:" + rootDir.absolutePath + "/.idea/modules/app/FrameworkFeatureTest.iml")
+//    changeSdkOrder(rootDir.absolutePath + "/.idea/modules/app/FrameworkFeatureTest.iml")
+//}
 
 dependencies {
 
+    compileOnly(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    compileOnly(files("libs/framework.jar"))
+//    compileOnly(files("libs/framework.jar"))
 }

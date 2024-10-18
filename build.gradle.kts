@@ -8,12 +8,12 @@ allprojects {
         val path = rootDir.absolutePath + "/app/libs/framework.jar"
         tasks.withType<JavaCompile> {
             options.compilerArgs.add("-Xbootclasspath/p:$path")
-            val newFileList = mutableListOf<File>()
-            newFileList.add(File(path))
-            options.bootstrapClasspath?.files?.let { oldFileList ->
-                newFileList.addAll(oldFileList)
-            }
-            options.bootstrapClasspath = files(*newFileList.toTypedArray())
+//            val newFileList = mutableListOf<File>()
+//            newFileList.add(File(path))
+//            options.bootstrapClasspath?.files?.let { oldFileList ->
+//                newFileList.addAll(oldFileList)
+//            }
+//            options.bootstrapClasspath = files(*newFileList.toTypedArray())
         }
     }
 }

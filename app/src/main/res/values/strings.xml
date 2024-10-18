@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">FrameworkFeatureTest</string>
 
-    <array name="main_test_array">
+    <array name="test_activity_array">
         <item>PackageManager测试</item>
         <item>Broadcast测试</item>
         <item>AppWidgetService测试</item>
@@ -12,9 +12,10 @@
         <item>UserManager测试</item>
         <item>自定义系统服务测试</item>
         <item>虚拟机相关测试</item>
+        <item>Notification测试</item>
     </array>
 
-    <array name="main_test_class_array">
+    <array name="test_activity_class_array">
         <item>com.example.frameworkfeaturetest.activity.PackageManagerTestActivity</item>
         <item>com.example.frameworkfeaturetest.activity.BroadcastTestActivity</item>
         <item>com.example.frameworkfeaturetest.activity.AppWidgetServiceTestActivity</item>
@@ -25,10 +26,16 @@
         <item>com.example.frameworkfeaturetest.activity.UserManagerTestActivity</item>
         <item>com.example.frameworkfeaturetest.activity.CustomSystemServiceTestActivity</item>
         <item>com.example.frameworkfeaturetest.activity.VmTestActivity</item>
+        <item>com.example.frameworkfeaturetest.activity.NotificationTestActivity</item>
     </array>
 
-    <string name="example_appwidget_description">小部件描述</string>
+    <string name="example_appwidget_description">This is my demo widget</string>
+    <string name="empty_view_text">This is the empty view</string>
 
-    <string name="device_admin_description">这是我的设备管理器</string>
-    <string name="device_admin_label">我的设备管理器</string>
+    <string name="device_admin_description">This is my device admin</string>
+    <string name="device_admin_label">My device admin</string>
+
+    <!-- NotificationTestActivity -->
+    <string name="allow_noti">Allow send notification</string>
+    <string name="send_noti">Send notification</string>
 </resources>

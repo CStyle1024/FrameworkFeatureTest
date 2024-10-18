@@ -10,7 +10,7 @@
     android:description="@string/example_appwidget_description"
     android:previewLayout="@layout/my_appwidget_preview"
     android:initialLayout="@layout/my_loading_appwidget"
-    android:configure="com.example.frameworkfeaturetest.MyAppWidgetConfigurationActivity"
+    android:configure="com.example.frameworkfeaturetest.widget.MyAppWidgetConfigurationActivity"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
     android:widgetFeatures="reconfigurable|configuration_optional"
