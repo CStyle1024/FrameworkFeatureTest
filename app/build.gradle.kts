@@ -58,7 +58,7 @@ android {
                 "proguard-rules.pro"
             )
 //            signingConfig = signingConfigs.getByName("debug")
-            signingConfig = signingConfigs.getByName("platform-e05")
+            signingConfig = signingConfigs.getByName("platform-phone")
         }
     }
     compileOptions {
@@ -66,6 +66,11 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
+    /*sourceSets {
+        getByName("main") {
+            jniLibs.srcDirs("libs")
+        }
+    }*/
 }
 
 //project.tasks.preBuild.get().doLast {

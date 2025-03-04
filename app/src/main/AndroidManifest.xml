@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:sharedUserId="anroid.uid.system">
+    xmlns:tools="http://schemas.android.com/tools">
+
     <!-- <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" /> -->
     <!-- <uses-permission android:name="android.permission.MANAGE_USERS" /> -->
     <!-- <uses-permission android:name="android.permission.CHANGE_COMPONENT_ENABLED_STATE" /> -->
@@ -13,6 +13,8 @@
 
     <uses-permission android:name="android.permission.MANAGE_DEVICE_POLICY_PACKAGE_STATE" />
     <uses-permission android:name="android.permission.android.permission.MANAGE_DEVICE_POLICY_LOCK_TASK" />
+
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <permission android:name="com.example.frameworkfeaturetest.test_permission" />
 
@@ -29,7 +31,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FrameworkFeatureTest"
-        tools:targetApi="31">
+        tools:targetApi="31"
+        android:extractNativeLibs="true">
         <activity
             android:name=".activity.NotificationTestActivity"
             android:exported="false" />
@@ -96,35 +99,40 @@
             </intent-filter>
         </activity>
 
+        <!-- 广播 -->
         <receiver
             android:name=".receiver.BootReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="com.example.frameworkfeaturetest.intent.action.STATIC_RECEIVER_TEST" />
             </intent-filter>
         </receiver>
-        <!--
-<receiver
+
+        <!--<receiver
             android:name=".receiver.TestReceiver"
             android:enabled="true"
             android:exported="true"
             android:permission="com.example.frameworkfeaturetest.test_permission">
             <intent-filter>
                 <action android:name="com.example.frameworkfeaturetest.action.ACTION_TEST_RECEIVER" />
-&lt;!&ndash;                <action android:name="android.intent.action.PACKAGE_CHANGED"/>&ndash;&gt;
-&lt;!&ndash;                <data android:scheme="package"/>&ndash;&gt;
+                <action android:name="android.intent.action.PACKAGE_CHANGED"/>
+                <data android:scheme="package"/>
             </intent-filter>
-        </receiver>
-        -->
+        </receiver>-->
+
         <receiver
             android:name=".receiver.TestReceiver3"
             android:enabled="true"
-            android:exported="true"
-            android:permission="com.example.frameworkfeaturetest.test_permission">
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.example.frameworkfeaturetest.action.ACTION_TEST_RECEIVER" />
+                <action android:name="android.intent.action.PACKAGE_RESTARTED"/>
+                <data android:scheme="package"/>
             </intent-filter>
         </receiver>
+
+        <!-- 插件 -->
         <receiver
             android:name=".widget.MyAppWidgetProvider"
             android:exported="false">
@@ -142,6 +150,7 @@
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
+        <!-- 设备管理 -->
         <receiver
             android:name=".receiver.MyDeviceAdminReceiver"
             android:description="@string/device_admin_description"

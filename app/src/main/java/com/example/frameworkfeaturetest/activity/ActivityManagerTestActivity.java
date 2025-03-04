@@ -5,6 +5,7 @@ import static com.example.frameworkfeaturetest.receiver.TestReceiver.ACTION_TEST
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActivityManager;
+import android.app.ApplicationStartInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -27,7 +28,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public class ActivityManagerTestActivity extends TestBaseActivity {
 
@@ -59,6 +63,8 @@ public class ActivityManagerTestActivity extends TestBaseActivity {
         } else if (R.id.btn_bind_service == viewId) {
             Intent intent = new Intent(this, MyService.class);
             bindService(intent, new MyServiceConnection(), Context.BIND_AUTO_CREATE);
+        } else if (R.id.btn_test == viewId) {
+            Log.d(TAG, "onClick: " + ~0);
         }
     }
 
@@ -124,5 +130,26 @@ public class ActivityManagerTestActivity extends TestBaseActivity {
     private void testLargeHeap() {
         long maxMem = Runtime.getRuntime().maxMemory() / 1000 / 1000;
         Log.d(TAG, "onCreate: maxMem=" + maxMem + " MB.");
+    }
+
+    public void testGetHistoricalProcessStartReasons() {
+        Log.d(TAG, "onClick: btn_test");
+        List<ApplicationStartInfo> startReasons;
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        try {
+            Class<?> amClass = Class.forName("android.app.ActivityManager");
+            Method getHistoricalProcessStartReasonsMethod = amClass.getMethod("getHistoricalProcessStartReasons", int.class);
+            getHistoricalProcessStartReasonsMethod.setAccessible(true);
+            startReasons = (List<ApplicationStartInfo>) getHistoricalProcessStartReasonsMethod.invoke(activityManager, 16);
+        } catch (ClassNotFoundException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (startReasons.isEmpty()) {
+            Log.d(TAG, "onClick: startReasons is empty.");
+        } else {
+            Log.d(TAG, "onClick: reason=" + startReasons.get(0).getReason());
+        }
     }
 }

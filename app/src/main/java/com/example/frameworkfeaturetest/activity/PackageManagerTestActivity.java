@@ -12,9 +12,11 @@ import android.os.Bundle;
 import android.os.Debug;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.UserHandle;
 import android.os.UserManager;
+import android.util.ArrayMap;
 import android.util.ArraySet;
 import android.util.Log;
 import android.view.View;
@@ -31,9 +33,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 
+import dalvik.system.BaseDexClassLoader;
 import dalvik.system.DexClassLoader;
 
 public class PackageManagerTestActivity extends TestBaseActivity {
@@ -64,6 +68,7 @@ public class PackageManagerTestActivity extends TestBaseActivity {
         initExecutor(mHandler, r -> {
             r.run();
         });
+        getClassLoader();
     }
 
     private void initExecutor(Handler handler, Executor executor) {
@@ -86,7 +91,7 @@ public class PackageManagerTestActivity extends TestBaseActivity {
     }
 
     public void onClick(View view) {
-        Log.d(TAG, "onClick: ");
+        Log.i(TAG, "onClick: ");
         String packageName = "com.meizu.alphame";
 
         int id = view.getId();
@@ -109,7 +114,26 @@ public class PackageManagerTestActivity extends TestBaseActivity {
 
 //            myExecutor.execute(PooledLambda.obtainRunnable(this::testMethod, System.currentTimeMillis(), getPackageName()));
 
-            testGetPIPActivityInfosFeat(PackageManagerTestActivity.this);
+//            testGetPIPActivityInfosFeat(PackageManagerTestActivity.this);
+
+//            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+//            PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "myapp:wakelock");
+//            wakeLock.acquire();
+
+//            testGetInstallPackages();
+//            test();
+
+//            PackageManager pm = getPackageManager();
+//            boolean isMzApp;
+//            try {
+//                ApplicationInfo aInfo = pm.getApplicationInfo("com.upuphone.star.launcher", 0);
+//                isMzApp = (aInfo.privateFlags & ApplicationInfo.PRIVATE_FLAG_CAN_UNINSTALL) != 0;
+//            } catch (PackageManager.NameNotFoundException e) {
+//                throw new RuntimeException(e);
+//            }
+//            Log.i(TAG, "onClick: isMzApp=" + isMzApp);
+
+            testFlymeInstallBlockAppManager(PackageManagerTestActivity.this);
         }
     }
 
@@ -294,26 +318,26 @@ public class PackageManagerTestActivity extends TestBaseActivity {
 //        }
     }
 
-    public boolean getApplicationEnabled(Context context, String enhancedPackageName) {
-        boolean enabled;
-        int state = context.getPackageManager().getApplicationEnabledSetting(enhancedPackageName);
-        if (PackageManager.COMPONENT_ENABLED_STATE_DEFAULT  == state || PackageManager.COMPONENT_ENABLED_STATE_ENABLED == state) {
-            enabled = true;
-        } else {
-            enabled = false;
-        }
-        return enabled;
-    }
-
 //    public boolean getApplicationEnabled(Context context, String enhancedPackageName) {
 //        boolean enabled;
-//        try {
-//            enabled = context.getPackageManager().getApplicationInfo(enhancedPackageName, 0).enabled;
-//        } catch (PackageManager.NameNotFoundException e) {
-//            throw new RuntimeException(e);
+//        int state = context.getPackageManager().getApplicationEnabledSetting(enhancedPackageName);
+//        if (PackageManager.COMPONENT_ENABLED_STATE_DEFAULT  == state || PackageManager.COMPONENT_ENABLED_STATE_ENABLED == state) {
+//            enabled = true;
+//        } else {
+//            enabled = false;
 //        }
 //        return enabled;
 //    }
+
+    public boolean getApplicationEnabled(Context context, String packageName) {
+        boolean enabled;
+        try {
+            enabled = context.getPackageManager().getApplicationInfo(packageName, 0).enabled;
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return enabled;
+    }
 
     public void getBuildExtField() {
         try {
@@ -360,7 +384,7 @@ public class PackageManagerTestActivity extends TestBaseActivity {
     }
     
     private void getPackageInfo() {
-        String pkg = "com.google.android.gms";
+        String pkg = "com.upuphone.star.launcher";
         try {
             PackageInfo pkgInfo = mPm.getPackageInfo(pkg,
                     PackageManager.GET_DISABLED_COMPONENTS
@@ -371,6 +395,8 @@ public class PackageManagerTestActivity extends TestBaseActivity {
             e.printStackTrace();
         }
     }
+
+
 
     private void testHideLauncherIconFeat(Context context) {
         Class<?> pmeClass;
@@ -390,11 +416,15 @@ public class PackageManagerTestActivity extends TestBaseActivity {
         }
     }
 
+    private void testGetInstallPackages() {
+        List<PackageInfo> result = getPackageManager().getInstalledPackages(0);
+    }
+
     private void testGetPIPActivityInfosFeat(Context context) {
         List<ActivityInfo> aiList = null;
 
         Object pmeInstance = getPackageManagerExtInstance(context);
-        Method getInstalledActivityInfosM = getPackageManagerExtM(context, "getInstalledActivityInfos", int.class, int.class);
+        Method getInstalledActivityInfosM = getPackageManagerExtM( "getInstalledActivityInfos", int.class, int.class);
         if (pmeInstance != null && getInstalledActivityInfosM != null) {
             Object result;
             try {
@@ -406,7 +436,7 @@ public class PackageManagerTestActivity extends TestBaseActivity {
                 aiList = (List<ActivityInfo>) result;
             }
         }
-        Log.d(TAG, "testGetPIPActivityInfosFeat: aiList = " + aiList);
+        Log.w(TAG, "testGetPIPActivityInfosFeat: aiList = " + aiList);
     }
 
     private Object getPackageManagerExtInstance(Context context) {
@@ -416,34 +446,63 @@ public class PackageManagerTestActivity extends TestBaseActivity {
             Method getInstanceMethod = pmeClass.getMethod("getInstance", Context.class);
             // 获取 flyme.pm.PackageManagerExt 实例
             pmeInstance = getInstanceMethod.invoke(null, context);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException
+                 | IllegalAccessException  e) {
             throw new RuntimeException(e);
         }
 
         return pmeInstance;
     }
 
-    private Method getPackageManagerExtM(Context context, String methodName, Class<?>... args) {
+    private Method getPackageManagerExtM(String methodName, Class<?>... args) {
         Method targetMethod;
         try {
             Object pmeInstance;
             Class<?> pmeClass = Class.forName("flyme.pm.PackageManagerExt");
-            Method getInstanceMethod = pmeClass.getMethod("getInstance", Context.class);
-            // 获取 flyme.pm.PackageManagerExt 实例
-            pmeInstance = getInstanceMethod.invoke(null, context);
-
-            targetMethod = pmeClass.getMethod(methodName, args);
+            if (args == null) {
+                targetMethod = pmeClass.getMethod(methodName);
+            } else {
+                targetMethod = pmeClass.getMethod(methodName, args);
+            }
             Log.d(TAG, "getPackageManagerExtM: methodName=" + methodName);
-        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException |
-                 InvocationTargetException e) {
+        } catch (ClassNotFoundException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
         return targetMethod;
+    }
+
+    public void testFlymeInstallBlockAppManager(Context context) {
+        ArrayList<String> pkgList = new ArrayList<>(1);
+        pkgList.add("com.smile.gifmaker");
+        pkgList.add("com.ss.android.ugc.aweme");
+        String[] packageNames = pkgList.toArray(new String[pkgList.size()]);
+
+        Object pmeInstance = getPackageManagerExtInstance(context);
+        Method setInstallBlockAppM = getPackageManagerExtM("setInstallBlockApps", String[].class, boolean.class);
+        try {
+            setInstallBlockAppM.invoke(pmeInstance, packageNames, true);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+
+        Method getInstallBlockAppsM = getPackageManagerExtM("getInstallBlockApps");
+        List<String> list;
+        try {
+            list = (List<String>) getInstallBlockAppsM.invoke(pmeInstance);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+        Log.d(TAG, "testFlymeInstallBlockAppManager: list=" + list);
+
+        Method isInstallBlockAppM = getPackageManagerExtM("isInstallBlockApp", String.class);
+        final String packageName = "com.ss.android.ugc.aweme";
+        boolean isBlocked;
+        try {
+            isBlocked = (boolean) isInstallBlockAppM.invoke(pmeInstance, packageName);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+
+        Log.d(TAG, "testFlymeInstallBlockAppManager: packageName=" + packageName + ":" + "isBlocked=" + isBlocked);
     }
 }

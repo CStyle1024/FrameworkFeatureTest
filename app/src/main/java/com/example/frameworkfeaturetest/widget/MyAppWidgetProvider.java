@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 import com.example.frameworkfeaturetest.R;
 
 import java.util.Arrays;
+import java.util.Map;
 
 public class MyAppWidgetProvider extends AppWidgetProvider {
 
@@ -27,6 +29,7 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.d(TAG, "onReceive: action=" + intent.getAction());
         AppWidgetManager mgr = AppWidgetManager.getInstance(context);
         if (intent.getAction().equals(TOAST_ACTION)) {
             int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
@@ -47,8 +50,9 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
-            views.setRemoteAdapter(appWidgetId, R.id.stack_view, intent); // SetRemoteViewsAdapterIntent
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout /*layoutId*/);
+//            views.setRemoteAdapter(appWidgetId, R.id.stack_view, intent); // SetRemoteViewsAdapterIntent
+            views.setRemoteAdapter(R.id.stack_view, intent); // SetRemoteViewsAdapterIntent
 
             views.setEmptyView(R.id.stack_view, R.id.empty_view);
 
@@ -58,6 +62,7 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
             PendingIntent toastPendingIntent = PendingIntent.getBroadcast(context, 0, toastIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            // viewId
             views.setPendingIntentTemplate(R.id.stack_view, toastPendingIntent);
 
             appWidgetManager.updateAppWidget(appWidgetId, views);

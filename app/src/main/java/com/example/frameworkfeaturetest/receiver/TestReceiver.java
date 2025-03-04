@@ -12,11 +12,11 @@ public class TestReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "onReceive: TestReceiver");
-        try {
-            Thread.sleep(8000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        Log.d(TAG, "onReceive: TestReceiver end");
+//        try {
+//            Thread.sleep(8000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+//        Log.d(TAG, "onReceive: TestReceiver end");
     }
 }
