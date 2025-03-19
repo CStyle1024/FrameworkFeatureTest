@@ -9,6 +9,7 @@ import androidx.core.app.NotificationManagerCompat;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -28,7 +29,6 @@ import com.example.frameworkfeaturetest.R;
 import com.example.frameworkfeaturetest.activity.base.TestBaseActivity;
 import com.example.frameworkfeaturetest.receiver.TestReceiver;
 import com.example.frameworkfeaturetest.receiver.TestReceiver2;
-import com.example.frameworkfeaturetest.receiver.TestReceiver3;
 import com.example.frameworkfeaturetest.util.NotificationHelper;
 
 import java.util.ArrayList;
@@ -45,7 +45,6 @@ public class BroadcastTestActivity extends TestBaseActivity {
 
     private TestReceiver mReceiver = new TestReceiver();
     private TestReceiver2 mReceiver2 = new TestReceiver2();
-    private TestReceiver3 mReceiver3 = new TestReceiver3();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,8 +76,7 @@ public class BroadcastTestActivity extends TestBaseActivity {
         Log.d(TAG, "onClick: ");
         int viewId = view.getId();
         if (R.id.btn_send_br == viewId) {
-//            sendBroadcast();
-            testNonNull(null);
+            sendBroadcast();
         }
     }
 
@@ -87,9 +85,10 @@ public class BroadcastTestActivity extends TestBaseActivity {
         int i = 0;
 //        while(i < 500) {
             Intent intent = new Intent(ACTION_TEST_RECEIVER);
+            intent.setClassName(getPackageName(), TestReceiver.class.getSimpleName());
 //        intent.setPackage(getPackageName());
-        sendOrderedBroadcast(intent, null);
-//            sendBroadcast(intent, null);
+//        sendOrderedBroadcast(intent, null);
+            sendBroadcast(intent, null);
 //        }
     }
 
@@ -97,7 +96,7 @@ public class BroadcastTestActivity extends TestBaseActivity {
         IntentFilter intentFilter1 = new IntentFilter(ACTION_TEST_RECEIVER);
         intentFilter1.setPriority(800);
 //        registerReceiver(testReceiver, intentFilter1);
-        registerReceiver(mReceiver, intentFilter1, null, mHandler);
+//        registerReceiver(mReceiver, intentFilter1, null, mHandler);
 
 
 //        IntentFilter intentFilter2 = new IntentFilter(ACTION_TEST_RECEIVER);
@@ -108,7 +107,6 @@ public class BroadcastTestActivity extends TestBaseActivity {
 
 //        IntentFilter intentFilter3 = new IntentFilter(Intent.ACTION_PACKAGE_RESTARTED);
 //        intentFilter3.addDataScheme("package");
-//        registerReceiver(mReceiver3, intentFilter3);
     }
 
     private void registerPackageChangedReceiver() {
@@ -131,10 +129,5 @@ public class BroadcastTestActivity extends TestBaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(mReceiver);
-    }
-
-    @NonNull
-    public String testNonNull(@NonNull BroadcastReceiver receiver) {
-        return receiver.toString();
     }
 }

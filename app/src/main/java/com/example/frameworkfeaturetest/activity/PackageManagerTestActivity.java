@@ -1,5 +1,7 @@
 package com.example.frameworkfeaturetest.activity;
 
+import android.app.Activity;
+import android.app.AppGlobals;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +10,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Debug;
 import android.os.Handler;
@@ -16,23 +19,31 @@ import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.UserHandle;
 import android.os.UserManager;
+import android.provider.Settings;
 import android.util.ArrayMap;
 import android.util.ArraySet;
 import android.util.Log;
 import android.view.View;
+
+import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 
 import com.android.internal.util.function.pooled.PooledLambda;
 import com.example.frameworkfeaturetest.R;
 import com.example.frameworkfeaturetest.activity.base.TestBaseActivity;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
@@ -69,6 +80,7 @@ public class PackageManagerTestActivity extends TestBaseActivity {
             r.run();
         });
         getClassLoader();
+
     }
 
     private void initExecutor(Handler handler, Executor executor) {
@@ -133,7 +145,11 @@ public class PackageManagerTestActivity extends TestBaseActivity {
 //            }
 //            Log.i(TAG, "onClick: isMzApp=" + isMzApp);
 
-            testFlymeInstallBlockAppManager(PackageManagerTestActivity.this);
+//            testFlymeInstallBlockAppManager(PackageManagerTestActivity.this);
+
+//            loadOtherAppContext();
+//            triggerDexopt();
+            startActivity(new Intent(PackageManagerTestActivity.this, AppWidgetHostActivity.class));
         }
     }
 
@@ -356,18 +372,7 @@ public class PackageManagerTestActivity extends TestBaseActivity {
         }
     }
 
-    private ApplicationInfo getSourceInfo(String packageName) {
-
-        if (packageName != null) {
-            try {
-                ApplicationInfo appinfo = getPackageManager().getApplicationInfo(packageName, 0);
-            } catch (PackageManager.NameNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        return null;
-    }
+    /************************* 安装应用测试 begin ********************************/
 
     private void buildInstallIntent() {
         Intent install = new Intent();
@@ -382,6 +387,66 @@ public class PackageManagerTestActivity extends TestBaseActivity {
             install.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, getPackageName());
         }).start();
     }
+
+    public void installInternalApk() {
+        copyApkFromAssets(this);
+        checkInstallPermission(this);
+    }
+
+    private void copyApkFromAssets(Context context) {
+        try (InputStream inputStream = context.getAssets().open("GFLincoln2_prd.apk");
+             FileOutputStream outputStream = context.openFileOutput("GFLincoln2_prd.apk", Context.MODE_PRIVATE)) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Uri getApkUri(Context context) {
+        File apkFile = new File(context.getFilesDir(), "plugin.apk");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", apkFile);
+        } else {
+            return Uri.fromFile(apkFile);
+        }
+    }
+
+    private static final int REQUEST_INSTALL_CODE = 1001;
+
+    private void checkInstallPermission(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (!context.getPackageManager().canRequestPackageInstalls()) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
+                        .setData(Uri.parse("package:" + context.getPackageName()));
+                ((Activity) context).startActivityForResult(intent, REQUEST_INSTALL_CODE);
+            } else {
+                startInstall(context);
+            }
+        } else {
+            startInstall(context);
+        }
+    }
+
+    private void startInstall(Context context) {
+        Uri apkUri = getApkUri(context);
+        Intent intent = new Intent(Intent.ACTION_VIEW)
+                .setDataAndType(apkUri, "application/vnd.android.package-archive")
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        context.startActivity(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_INSTALL_CODE && resultCode == RESULT_OK) {
+            startInstall(this);
+        }
+    }
+    /************************* 安装应用测试 end ********************************/
     
     private void getPackageInfo() {
         String pkg = "com.upuphone.star.launcher";
@@ -395,8 +460,6 @@ public class PackageManagerTestActivity extends TestBaseActivity {
             e.printStackTrace();
         }
     }
-
-
 
     private void testHideLauncherIconFeat(Context context) {
         Class<?> pmeClass;
@@ -504,5 +567,32 @@ public class PackageManagerTestActivity extends TestBaseActivity {
         }
 
         Log.d(TAG, "testFlymeInstallBlockAppManager: packageName=" + packageName + ":" + "isBlocked=" + isBlocked);
+    }
+
+    public void loadOtherAppContext() {
+        try {
+            Context pkgContext = createPackageContext("com.meizu.media.camera", CONTEXT_INCLUDE_CODE | CONTEXT_IGNORE_SECURITY);
+            pkgContext.getAssets().open("lock.json");
+            pkgContext.getClassLoader();
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void triggerDexopt() {
+        /*List<PackageInfo> installedPackages = getPackageManager().getInstalledPackages(0);
+        for (PackageInfo info : installedPackages) {
+            if (info != null) {
+                String pkgName = info.packageName;
+            }
+        }*/
+        try {
+            AppGlobals.getPackageManager().performDexOptMode("com.meizu.media.camera", true, "speed-profile", true, false, null);
+            android.app.AppGlobals.getPackageManager().isDeviceUpgrading();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

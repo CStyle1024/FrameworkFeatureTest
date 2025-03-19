@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MzTextInputLayout">
+        <attr name="android_hint" format="string"/>
+        <attr name="hintAnimationEnabled" format="boolean"/>
+        <attr name="android_textColorHint" format="reference|color"/>
+        <attr name="hintTextAppearance" format="reference"/>
+        <attr name="errorTextAppearance" format="reference"/>
+        <attr name="errorEnabled" format="boolean"/>
+        <attr name="errorBackground" format="reference"/>
+        <attr name="alignEditContent" format="boolean"/>
+        <attr name="labelPaddingHorizontal" format="dimension"/>
+        <attr name="errorPaddingHorizontal" format="dimension"/>
+    </declare-styleable>
+</resources>

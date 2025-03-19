@@ -4,4 +4,6 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="testColor">#FFFF0000</color>
+
+    <color name="mz_text_input_normal_color">#FF0000FF</color>
 </resources>

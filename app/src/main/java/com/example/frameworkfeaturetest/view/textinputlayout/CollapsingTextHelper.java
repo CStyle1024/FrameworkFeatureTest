@@ -188,7 +188,7 @@ public final class CollapsingTextHelper {
         return mTextPaint.getTypeface();
     }
 
-    public void setExpandedFraction(float fraction) {
+    public void setExpansionFraction(float fraction) {
         float fraction2 = MathUtils.constrain(fraction, 0.0f, 1.0f);
         if (Float.compare(fraction2, mExpandedFraction) != 0) {
             mExpandedFraction = fraction2;
